@@ -1,10 +1,12 @@
 use aoc::BoxResult;
 
-fn part1(_data: String) -> BoxResult<usize> {
+fn part1(data: String) -> BoxResult<usize> {
+    let _ = data;
     Ok(0)
 }
 
-fn part2(_data: String) -> BoxResult<usize> {
+fn part2(data: String) -> BoxResult<usize> {
+    let _ = data;
     Ok(0)
 }
 
