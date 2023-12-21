@@ -1,4 +1,3 @@
-
 # Day 5: Supply Stacks
 
 ## Part 1
