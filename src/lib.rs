@@ -1,12 +1,9 @@
-use std::{error::Error, fs};
+use std::{fs, io};
 
-pub type BoxResult<T> = Result<T, Box<dyn Error>>;
-
-pub fn read_input(day: usize) -> BoxResult<String> {
+pub fn read_input(day: usize) -> io::Result<String> {
     let path = format!("input/input{:0>2}.txt", day);
-    let input = fs::read_to_string(path)?;
 
-    Ok(input)
+    fs::read_to_string(path)
 }
 
 #[macro_export]
