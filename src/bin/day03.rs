@@ -21,16 +21,22 @@ fn get_priority(item: &u8) -> usize {
     match item {
         b'a'..=b'z' => (*item - b'a') as usize + 1,
         b'A'..=b'Z' => (*item - b'A') as usize + 27,
-        _ => unreachable!(),
+        _ => panic!("Item was not ascii alphabet character"),
     }
 }
 
 fn part2(data: String) -> usize {
-    data.lines().chunks(3).into_iter().map(badge_priority).sum()
+    data.lines()
+        .chunks(3)
+        .into_iter()
+        .map(Itertools::collect_vec)
+        .map(badge_priority)
+        .sum()
 }
 
-fn badge_priority<'a>(group: impl Iterator<Item = &'a str>) -> usize {
+fn badge_priority(group: Vec<&str>) -> usize {
     let result = group
+        .into_iter()
         .map(to_set)
         .reduce(intersect)
         .expect("Group was empty")
