@@ -1,25 +1,23 @@
-use std::{error::Error, mem};
+use std::mem;
 
-type BoxResult<T> = Result<T, Box<dyn Error>>;
-
-fn part1(data: String) -> BoxResult<usize> {
+fn part1(data: String) -> usize {
     let max_calories = data
         .split("\n\n")
         .map(|elf| elf.lines().flat_map(str::parse::<usize>).sum())
         .max()
-        .ok_or("No hay ningun grupo de elfos")?;
+        .expect("No hay ningun grupo de elfos");
 
-    Ok(max_calories)
+    max_calories
 }
 
-fn part2(data: String) -> BoxResult<usize> {
+fn part2(data: String) -> usize {
     let mut max_calories = Podium::new(3);
 
     data.split("\n\n")
         .map(|elf| elf.lines().flat_map(str::parse::<usize>).sum())
         .for_each(|calories| max_calories.insert(calories));
 
-    Ok(max_calories.sum())
+    max_calories.sum()
 }
 
 struct Podium(Vec<usize>);

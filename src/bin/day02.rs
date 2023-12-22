@@ -1,21 +1,17 @@
-use aoc::BoxResult;
-
-fn part1(data: String) -> BoxResult<usize> {
-    let points: usize = data.lines().flat_map(points1).sum();
-
-    Ok(points)
+fn part1(data: String) -> usize {
+    data.lines().map(points1).sum()
 }
 
-fn points1(line: &str) -> BoxResult<usize> {
-    let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)")?;
-    let capture = regex.captures(line).ok_or("Malformed input")?;
+fn points1(line: &str) -> usize {
+    let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)").expect("Invalid regex");
+    let capture = regex.captures(line).expect("Malformed input");
 
     let (_, [oponent, player]) = capture.extract();
 
     let oponent = Play::from_oponent(oponent.as_bytes()[0]);
     let strategy = Play::from_player(player.as_bytes()[0]);
 
-    Ok(strategy.score() + strategy.battle(oponent).score())
+    strategy.score() + strategy.battle(oponent).score()
 }
 
 #[repr(u8)]
@@ -77,15 +73,13 @@ impl Outcome {
     }
 }
 
-fn part2(data: String) -> BoxResult<usize> {
-    let points: usize = data.lines().flat_map(points2).sum();
-
-    Ok(points)
+fn part2(data: String) -> usize {
+    data.lines().map(points2).sum()
 }
 
-fn points2(line: &str) -> BoxResult<usize> {
-    let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)")?;
-    let capture = regex.captures(line).ok_or("Malformed input")?;
+fn points2(line: &str) -> usize {
+    let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)").expect("Invalid regex");
+    let capture = regex.captures(line).expect("Malformed input");
 
     let (_, [oponent, result]) = capture.extract();
 
@@ -93,7 +87,7 @@ fn points2(line: &str) -> BoxResult<usize> {
     let result = Outcome::from_result(result.as_bytes()[0]);
     let strategy = Play::needed_for(oponent, result);
 
-    Ok(strategy.score() + result.score())
+    strategy.score() + result.score()
 }
 
 aoc::main!(2);
