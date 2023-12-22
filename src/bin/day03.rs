@@ -1,13 +1,52 @@
-use aoc::BoxResult;
+use itertools::Itertools;
+use std::collections::HashSet;
 
-fn part1(data: String) -> BoxResult<usize> {
-    let _ = data;
-    Ok(0)
+fn part1(data: String) -> usize {
+    data.lines().map(error_priority).sum()
 }
 
-fn part2(data: String) -> BoxResult<usize> {
-    let _ = data;
-    Ok(0)
+fn error_priority(line: &str) -> usize {
+    let middle = line.len() / 2 as usize;
+    let (first, second) = line.split_at(middle);
+
+    let first = first.bytes().collect::<HashSet<u8>>();
+    let second = second.bytes().collect::<HashSet<u8>>();
+
+    let priority_sum = first.intersection(&second).map(get_priority).sum();
+
+    priority_sum
+}
+
+fn get_priority(item: &u8) -> usize {
+    match item {
+        b'a'..=b'z' => (*item - b'a') as usize + 1,
+        b'A'..=b'Z' => (*item - b'A') as usize + 27,
+        _ => unreachable!(),
+    }
+}
+
+fn part2(data: String) -> usize {
+    data.lines().chunks(3).into_iter().map(badge_priority).sum()
+}
+
+fn badge_priority<'a>(group: impl Iterator<Item = &'a str>) -> usize {
+    let result = group
+        .map(to_set)
+        .reduce(intersect)
+        .expect("Group was empty")
+        .iter()
+        .map(get_priority)
+        .sum();
+
+    result
+}
+
+fn intersect(a: HashSet<u8>, b: HashSet<u8>) -> HashSet<u8> {
+    a.intersection(&b).map(ToOwned::to_owned).collect()
+}
+
+fn to_set(line: &str) -> HashSet<u8> {
+    line.bytes().collect()
 }
 
 aoc::main!(3);

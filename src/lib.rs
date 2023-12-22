@@ -15,8 +15,8 @@ macro_rules! main {
         fn main() -> aoc::BoxResult<()> {
             let data = aoc::read_input($day)?;
 
-            println!("Part1: {}", part1(data.clone())?);
-            println!("Part2: {}", part2(data.clone())?);
+            println!("Part 1: {}", part1(data.clone()));
+            println!("Part 2: {}", part2(data));
 
             Ok(())
         }
