@@ -32,8 +32,6 @@ In this example, if you were to follow the strategy guide, you would get a total
 
 What would your total score be if everything goes exactly according to your strategy guide?
 
-Your puzzle answer was 14069.
-
 ## Part 2
 
 The Elf finishes helping with the tent and sneaks back over to you. "Anyway, the second column says how the round needs to end: X means you need to lose, Y means you need to end the round in a draw, and Z means you need to win. Good luck!"
@@ -47,5 +45,3 @@ The total score is still calculated in the same way, but now you need to figure 
 Now that you're correctly decrypting the ultra top secret strategy guide, you would get a total score of 12.
 
 Following the Elf's instructions for the second column, what would your total score be if everything goes exactly according to your strategy guide?
-
-Your puzzle answer was 12411.
