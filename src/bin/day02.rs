@@ -1,19 +1,19 @@
 use aoc::BoxResult;
 
 fn part1(data: String) -> BoxResult<usize> {
-    let points: usize = data.lines().flat_map(points).sum();
+    let points: usize = data.lines().flat_map(points1).sum();
 
     Ok(points)
 }
 
-fn points(line: &str) -> BoxResult<usize> {
+fn points1(line: &str) -> BoxResult<usize> {
     let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)")?;
     let capture = regex.captures(line).ok_or("Malformed input")?;
 
-    let (_, [oponent, strategy]) = capture.extract();
+    let (_, [oponent, player]) = capture.extract();
 
     let oponent = Play::from_oponent(oponent.as_bytes()[0]);
-    let strategy = Play::from_player(strategy.as_bytes()[0]);
+    let strategy = Play::from_player(player.as_bytes()[0]);
 
     Ok(strategy.score() + strategy.battle(oponent).score())
 }
@@ -49,9 +49,16 @@ impl Play {
 
         unsafe { std::mem::transmute(result) }
     }
+
+    fn needed_for(oponent: Play, result: Outcome) -> Play {
+        let strategy = (result as u8 + 2 + oponent as u8) % 3;
+
+        unsafe { std::mem::transmute(strategy) }
+    }
 }
 
 #[allow(dead_code)]
+#[derive(Clone, Copy)]
 enum Outcome {
     Lose,
     Draw,
@@ -62,11 +69,31 @@ impl Outcome {
     pub fn score(self) -> usize {
         self as usize * 3
     }
+
+    pub fn from_result(mut result: u8) -> Self {
+        result -= b'X';
+
+        unsafe { std::mem::transmute(result) }
+    }
 }
 
 fn part2(data: String) -> BoxResult<usize> {
-    let _ = data;
-    Ok(0)
+    let points: usize = data.lines().flat_map(points2).sum();
+
+    Ok(points)
+}
+
+fn points2(line: &str) -> BoxResult<usize> {
+    let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)")?;
+    let capture = regex.captures(line).ok_or("Malformed input")?;
+
+    let (_, [oponent, result]) = capture.extract();
+
+    let oponent = Play::from_oponent(oponent.as_bytes()[0]);
+    let result = Outcome::from_result(result.as_bytes()[0]);
+    let strategy = Play::needed_for(oponent, result);
+
+    Ok(strategy.score() + result.score())
 }
 
 aoc::main!(2);
