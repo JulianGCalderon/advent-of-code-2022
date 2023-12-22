@@ -12,13 +12,17 @@ pub fn read_input(day: usize) -> BoxResult<String> {
 #[macro_export]
 macro_rules! main {
     ($day:expr) => {
-        fn main() -> aoc::BoxResult<()> {
-            let data = aoc::read_input($day)?;
+        fn main() {
+            let data = match aoc::read_input($day) {
+                Ok(data) => data,
+                Err(err) => {
+                    eprintln!("Could not find input file for day {}", $day);
+                    return;
+                }
+            };
 
             println!("Part 1: {}", part1(data.clone()));
             println!("Part 2: {}", part2(data));
-
-            Ok(())
         }
     };
 }
