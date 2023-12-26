@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 struct Range {
     min: usize,
     max: usize,
@@ -8,7 +10,7 @@ impl Range {
         self.min <= other.min && self.max >= other.max
     }
 
-    fn overlaps(&self, other: &&Range) -> bool {
+    fn overlaps(&self, other: &Range) -> bool {
         self.min <= other.max && self.max >= other.min
     }
 }
@@ -34,14 +36,12 @@ fn part1(data: String) -> usize {
         .count()
 }
 
-fn parse_ranges(pair: &str) -> (Range, Range) {
-    let (left, right) = pair.split_once(",").expect("There was no range separator");
-
-    (left.into(), right.into())
+fn parse_ranges(pair: &str) -> Vec<Range> {
+    pair.split(",").map(Range::from).collect_vec()
 }
 
-fn has_containment((left, right): &(Range, Range)) -> bool {
-    left.contains(&right) || right.contains(&left)
+fn has_containment(pair: &Vec<Range>) -> bool {
+    pair[0].contains(&pair[1]) || pair[1].contains(&pair[0])
 }
 
 fn part2(data: String) -> usize {
@@ -52,8 +52,8 @@ fn part2(data: String) -> usize {
         .count()
 }
 
-fn has_overlap((left, right): &(Range, Range)) -> bool {
-    left.overlaps(&right)
+fn has_overlap(pair: &Vec<Range>) -> bool {
+    pair[0].overlaps(&pair[1])
 }
 
 aoc::main!(4);
