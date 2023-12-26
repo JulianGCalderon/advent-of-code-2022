@@ -1,8 +1,34 @@
-use std::ops::RangeInclusive;
+struct Range {
+    min: usize,
+    max: usize,
+}
 
-use regex::Regex;
+impl Range {
+    pub fn contains(&self, other: &Self) -> bool {
+        self.min <= other.min && self.max >= other.max
+    }
 
-type Pair = (RangeInclusive<usize>, RangeInclusive<usize>);
+    pub fn has(&self, n: usize) -> bool {
+        self.min <= n && n <= self.max
+    }
+
+    fn overlaps(&self, other: &&Range) -> bool {
+        self.has(other.min) || self.has(other.max) || other.contains(self)
+    }
+}
+
+impl From<&str> for Range {
+    fn from(value: &str) -> Self {
+        let (min, max) = value
+            .split_once("-")
+            .expect("There was no bounds separator");
+
+        Self {
+            min: min.parse().expect("Left bound was not integer"),
+            max: max.parse().expect("Right bound was not integer"),
+        }
+    }
+}
 
 fn part1(data: String) -> usize {
     data.lines()
@@ -12,35 +38,26 @@ fn part1(data: String) -> usize {
         .count()
 }
 
-fn parse_ranges(pair: &str) -> Pair {
-    let mut ranges = pair.split(",").map(parse_range);
+fn parse_ranges(pair: &str) -> (Range, Range) {
+    let (left, right) = pair.split_once(",").expect("There was no range separator");
 
-    let left = ranges.next().expect("Input was malformed");
-    let right = ranges.next().expect("Input was malformed");
-
-    (left, right)
+    (left.into(), right.into())
 }
 
-fn parse_range(range: &str) -> RangeInclusive<usize> {
-    let regex = Regex::new(r"(\d*)-(\d*)").expect("Regex should be valid");
-
-    let (_, [left, right]) = regex
-        .captures(range)
-        .expect("Input was malformed")
-        .extract();
-
-    let left = left.parse().unwrap();
-    let right = right.parse().unwrap();
-
-    left..=right
+fn has_containment((left, right): &(Range, Range)) -> bool {
+    left.contains(&right) || right.contains(&left)
 }
-
-fn has_containment(pair: &Pair) -> bool {}
 
 fn part2(data: String) -> usize {
-    let _ = data;
+    data.lines()
+        .into_iter()
+        .map(parse_ranges)
+        .filter(has_overlap)
+        .count()
+}
 
-    0
+fn has_overlap((left, right): &(Range, Range)) -> bool {
+    left.overlaps(&right)
 }
 
 aoc::main!(4);
