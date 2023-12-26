@@ -8,12 +8,8 @@ impl Range {
         self.min <= other.min && self.max >= other.max
     }
 
-    pub fn has(&self, n: usize) -> bool {
-        self.min <= n && n <= self.max
-    }
-
     fn overlaps(&self, other: &&Range) -> bool {
-        self.has(other.min) || self.has(other.max) || other.contains(self)
+        self.min <= other.max && self.max >= other.min
     }
 }
 
