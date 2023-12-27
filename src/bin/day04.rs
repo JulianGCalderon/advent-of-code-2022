@@ -16,7 +16,10 @@ impl From<&str> for Range {
     fn from(value: &str) -> Self {
         let (min, max) = value
             .splitn(2, "-")
-            .flat_map(str::parse::<usize>)
+            .map(str::parse::<usize>)
+            .collect::<Result<Vec<_>, _>>()
+            .expect("Bounds should be valid numbers")
+            .into_iter()
             .collect_tuple()
             .expect("Range was malformed");
 

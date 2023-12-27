@@ -1,19 +1,3 @@
-fn part1(data: String) -> usize {
-    data.lines().map(points1).sum()
-}
-
-fn points1(line: &str) -> usize {
-    let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)").expect("Invalid regex");
-    let capture = regex.captures(line).expect("Malformed input");
-
-    let (_, [oponent, player]) = capture.extract();
-
-    let oponent = Play::from_oponent(oponent.as_bytes()[0]);
-    let strategy = Play::from_player(player.as_bytes()[0]);
-
-    strategy.score() + strategy.battle(oponent).score()
-}
-
 #[repr(u8)]
 #[allow(dead_code)]
 #[derive(Clone, Copy)]
@@ -71,6 +55,22 @@ impl Outcome {
 
         unsafe { std::mem::transmute(result) }
     }
+}
+
+fn part1(data: String) -> usize {
+    data.lines().map(points1).sum()
+}
+
+fn points1(line: &str) -> usize {
+    let regex = regex::Regex::new(r"(A|B|C) (X|Y|Z)").expect("Invalid regex");
+    let capture = regex.captures(line).expect("Malformed input");
+
+    let (_, [oponent, player]) = capture.extract();
+
+    let oponent = Play::from_oponent(oponent.as_bytes()[0]);
+    let strategy = Play::from_player(player.as_bytes()[0]);
+
+    strategy.score() + strategy.battle(oponent).score()
 }
 
 fn part2(data: String) -> usize {

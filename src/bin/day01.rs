@@ -1,25 +1,5 @@
 use std::mem;
 
-fn part1(data: String) -> usize {
-    let max_calories = data
-        .split("\n\n")
-        .map(|elf| elf.lines().flat_map(str::parse::<usize>).sum())
-        .max()
-        .expect("No hay ningun grupo de elfos");
-
-    max_calories
-}
-
-fn part2(data: String) -> usize {
-    let mut max_calories = Podium::new(3);
-
-    data.split("\n\n")
-        .map(|elf| elf.lines().flat_map(str::parse::<usize>).sum())
-        .for_each(|calories| max_calories.insert(calories));
-
-    max_calories.sum()
-}
-
 struct Podium(Vec<usize>);
 
 impl Podium {
@@ -42,6 +22,35 @@ impl Podium {
     pub fn sum(&self) -> usize {
         self.0.iter().sum()
     }
+}
+
+fn part1(data: String) -> usize {
+    let max_calories = data
+        .split("\n\n")
+        .map(count_calories)
+        .max()
+        .expect("No hay ningun grupo de elfos");
+
+    max_calories
+}
+
+fn count_calories(elf: &str) -> usize {
+    elf.lines()
+        .map(str::parse::<usize>)
+        .collect::<Result<Vec<_>, _>>()
+        .expect("All numbers should be valid")
+        .into_iter()
+        .sum()
+}
+
+fn part2(data: String) -> usize {
+    let mut max_calories = Podium::new(3);
+
+    data.split("\n\n")
+        .map(count_calories)
+        .for_each(|calories| max_calories.insert(calories));
+
+    max_calories.sum()
 }
 
 aoc::main!(1);

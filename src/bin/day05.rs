@@ -3,7 +3,37 @@ use regex::Regex;
 
 type Ship = Vec<Stack>;
 type Stack = Vec<char>;
-type Instruction = (usize, usize, usize);
+
+struct Instruction {
+    pub amount: usize,
+    pub from: usize,
+    pub to: usize,
+}
+
+impl From<&str> for Instruction {
+    fn from(line: &str) -> Self {
+        let regex = Regex::new(r"move (\d+) from (\d+) to (\d+)").expect("Should be valid");
+
+        let (amount, from, to) = regex
+            .captures(line)
+            .expect("Instruction was malformed")
+            .extract::<3>()
+            .1
+            .into_iter()
+            .map(str::parse)
+            .collect::<Result<Vec<_>, _>>()
+            .expect("There should be 3 digits")
+            .into_iter()
+            .collect_tuple()
+            .expect("Should be valid digits");
+
+        Self {
+            amount,
+            from: from - 1,
+            to: to - 1,
+        }
+    }
+}
 
 fn part1(data: String) -> String {
     let (ship, instructions) = data.split_once("\n\n").expect("There was no empty line");
@@ -12,10 +42,13 @@ fn part1(data: String) -> String {
 
     instructions
         .lines()
-        .map(parse_instruction)
+        .map(Instruction::from)
         .for_each(|instruction| execute(&mut ship, instruction));
 
-    ship.iter().flat_map(|stack| stack.last()).collect()
+    ship.iter()
+        .map(|stack| stack.last())
+        .collect::<Option<_>>()
+        .expect("No stack should be empty")
 }
 
 fn parse_ship(layout: &str) -> Ship {
@@ -45,28 +78,13 @@ fn parse_ship(layout: &str) -> Ship {
     ship
 }
 
-fn parse_instruction(line: &str) -> Instruction {
-    let regex = Regex::new(r"move (\d+) from (\d+) to (\d+)").expect("Should be valid");
-
-    let (_, instruction) = regex
-        .captures(line)
-        .expect("Instruction was malformed")
-        .extract::<3>();
-
-    instruction
-        .into_iter()
-        .flat_map(str::parse)
-        .collect_tuple()
-        .expect("Should be valid digits")
-}
-
 fn execute(ship: &mut Ship, instruction: Instruction) {
-    for _ in 0..instruction.0 {
-        let chest = ship[instruction.1 - 1]
+    for _ in 0..instruction.amount {
+        let chest = ship[instruction.from]
             .pop()
             .expect("Stack should not be empty");
 
-        ship[instruction.2 - 1].push(chest);
+        ship[instruction.to].push(chest);
     }
 }
 
@@ -77,18 +95,23 @@ fn part2(data: String) -> String {
 
     instructions
         .lines()
-        .map(parse_instruction)
+        .map(Instruction::from)
         .for_each(|instruction| execute2(&mut ship, instruction));
 
-    ship.iter().flat_map(|stack| stack.last()).collect()
+    ship.iter()
+        .map(|stack| stack.last())
+        .collect::<Option<_>>()
+        .expect("No stack should be empty")
 }
 
 fn execute2(ship: &mut Ship, instruction: Instruction) {
-    let origin = &mut ship[instruction.1 - 1];
+    let origin = &mut ship[instruction.from];
 
-    let mut moved = origin.drain((origin.len() - instruction.0)..).collect_vec();
+    let mut moved = origin
+        .drain((origin.len() - instruction.amount)..)
+        .collect_vec();
 
-    ship[instruction.2 - 1].append(&mut moved);
+    ship[instruction.to].append(&mut moved);
 }
 
 aoc::main!(5);
